@@ -31,13 +31,20 @@ impl Controller {
     }
 
     /// Gets the channels with non-zero number of LED's associated with them.
-    /// 
+    ///
     /// I know this is somewhat non-intuitive, but naming it something like
     /// `active_channels(&self)` seemed overly verbose.
     pub fn channels(&self) -> Vec<usize> {
         (0..self.c_struct.channel.len()).filter(|x: _ | {
             self.c_struct.channel[x.clone()].count > 0
         }).collect::<Vec<_>>()
+    }
+
+    /// Sets the channel brightness.
+    ///
+    /// A subsequent call to `render` is needed to apply this change.
+    pub fn set_brightness(&self, channel: usize, brightness: u8) {
+        self.c_struct.channel[channel].brightness = brightness;
     }
 
     /// Gets a slice view to the color array to be written to the LEDs.
