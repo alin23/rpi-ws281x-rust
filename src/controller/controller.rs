@@ -1,6 +1,6 @@
 use std::slice::{from_raw_parts, from_raw_parts_mut};
 
-use super::super::bindings::{ws2811_fini, ws2811_render, ws2811_t};
+use super::super::bindings::{ws2811_fini, ws2811_render, ws2811_wait, ws2811_t};
 use super::super::util::{Result, RawColor};
 
 /// The main struct used to control lights.  Provides ways of
@@ -30,6 +30,13 @@ impl Controller {
         }
     }
 
+    /// Wait for render to finish.
+    pub fn wait(&mut self) -> Result<()> {
+        unsafe {
+            return ws2811_wait(&mut self.c_struct).into();
+        }
+    }
+
     /// Gets the channels with non-zero number of LED's associated with them.
     ///
     /// I know this is somewhat non-intuitive, but naming it something like
@@ -43,7 +50,7 @@ impl Controller {
     /// Sets the channel brightness.
     ///
     /// A subsequent call to `render` is needed to apply this change.
-    pub fn set_brightness(&self, channel: usize, brightness: u8) {
+    pub fn set_brightness(&mut self, channel: usize, brightness: u8) {
         self.c_struct.channel[channel].brightness = brightness;
     }
 
